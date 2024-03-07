@@ -11,9 +11,31 @@ class PlayerController extends GetxController{
   var playIndex = 0.obs;
   var isPlaying = false.obs;
 
+  var duration = ''.obs;
+  var positon = ''.obs;
+
+  var max = 0.0.obs;
+  var value = 0.0.obs;
+
   void onInit() {
     super.onInit();
     checkPermission();
+  }
+
+  updatePositon() {
+    audioPlayer.durationStream.listen((d) {
+      duration.value = d.toString().split(".")[0];
+      max.value = d!.inSeconds.toDouble();
+    });
+    audioPlayer.positionStream.listen((p) {
+      positon.value = p.toString().split(".")[0];
+      value.value = p.inSeconds.toDouble();
+    });
+  }
+
+  changeDurationToSeconds(seconds){
+    var duration = Duration(seconds: seconds);
+    audioPlayer.seek(seconds);
   }
 
   playSong(String ? uri, index){
@@ -25,6 +47,7 @@ class PlayerController extends GetxController{
          );
          audioPlayer.play();
          isPlaying(true);
+         updatePositon();
        }
        on Exception catch(e){
      print(e.toString());
